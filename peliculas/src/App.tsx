@@ -2,14 +2,15 @@ import { useEffect, useState } from "react";
 import "./App.css";
 
 interface Player {
-  name: string;
-  age: number;
-  position: string;
-  nationality: string;
-  origin: string;
-  destination: string;
-  marketValue: string;
-  image: string;
+  numero: string;
+  nombre: string;
+  posicion: string;
+  nacionalidades: string;
+  edad: string;
+  club: string;
+  valor_mercado: string;
+  fecha_actualizacion: string;
+  url_foto: string;
 }
 
 function App() {
@@ -18,7 +19,10 @@ function App() {
   useEffect(() => {
     fetch("/playersPortugal.json")
       .then((res) => res.json())
-      .then((data) => setPlayers(data));
+      .then((data) => {
+        console.log("Datos cargados:", data);
+        setPlayers(data);
+      });
   }, []);
 
   return (
@@ -27,14 +31,18 @@ function App() {
       <div className="card-container">
         {players.map((player, idx) => (
           <div className="card" key={idx}>
-            <img src={player.image} alt={player.name} className="player-img" />
-            <h2>{player.name}</h2>
-            <p><strong>Edad:</strong> {player.age}</p>
-            <p><strong>Posición:</strong> {player.position}</p>
-            <p><strong>Nacionalidad:</strong> {player.nationality}</p>
-            <p><strong>Origen:</strong> {player.origin}</p>
-            <p><strong>Destino:</strong> {player.destination}</p>
-            <p><strong>Valor de mercado:</strong> {player.marketValue}</p>
+            <img
+              src={player.url_foto}
+              alt={player.nombre}
+              className="player-img"
+            />
+            <h2>{player.nombre}</h2>
+            <p><strong>Posición:</strong> {player.posicion}</p>
+            <p><strong>Nacionalidades:</strong> {player.nacionalidades}</p>
+            <p><strong>Edad:</strong> {player.edad}</p>
+            <p><strong>Club:</strong> {player.club || "No disponible"}</p>
+            <p><strong>Valor de mercado:</strong> {player.valor_mercado}</p>
+            <p><strong>Fecha de actualización:</strong> {player.fecha_actualizacion}</p>
           </div>
         ))}
       </div>
