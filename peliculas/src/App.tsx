@@ -13,23 +13,33 @@ interface Player {
   url_foto: string;
 }
 
+const ITEMS_PER_PAGE = 20;
+
 function App() {
   const [players, setPlayers] = useState<Player[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     fetch("/playersPortugal.json")
       .then((res) => res.json())
-      .then((data) => {
-        console.log("Datos cargados:", data);
-        setPlayers(data);
-      });
+      .then((data) => setPlayers(data));
   }, []);
+
+  const totalPages = Math.ceil(players.length / ITEMS_PER_PAGE);
+  const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
+  const currentPlayers = players.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+
+  const handlePageClick = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
 
   return (
     <div className="container">
-      <h1>Transferencias de Jugadores de Portugal</h1>
+      <h1>Jugadores de Portugal</h1>
       <div className="card-container">
-        {players.map((player, idx) => (
+        {currentPlayers.map((player, idx) => (
           <div className="card" key={idx}>
             <img
               src={player.url_foto}
@@ -45,6 +55,28 @@ function App() {
             <p><strong>Fecha de actualización:</strong> {player.fecha_actualizacion}</p>
           </div>
         ))}
+      </div>
+
+      {/* Navegación por páginas */}
+      <div className="pagination">
+        <button onClick={() => handlePageClick(currentPage - 1)} disabled={currentPage === 1}>
+          &lt;
+        </button>
+        {[...Array(totalPages)].map((_, index) => {
+          const page = index + 1;
+          return (
+            <button
+              key={page}
+              className={page === currentPage ? "active" : ""}
+              onClick={() => handlePageClick(page)}
+            >
+              {page}
+            </button>
+          );
+        })}
+        <button onClick={() => handlePageClick(currentPage + 1)} disabled={currentPage === totalPages}>
+          &gt;
+        </button>
       </div>
     </div>
   );
